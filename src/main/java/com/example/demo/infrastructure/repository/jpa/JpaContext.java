@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
@@ -22,8 +21,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 public class JpaContext 
 {
-	@Bean
 	@Autowired
+	@Bean
 	public JpaTransactionManager transactionManager(AbstractEntityManagerFactoryBean entityManagerFactory)
 	{
 		JpaTransactionManager transactionManager = new JpaTransactionManager();
@@ -31,8 +30,8 @@ public class JpaContext
 		return transactionManager;
 	}
 	
-	@Bean("entityManagerFactory")
 	@Autowired
+	@Bean("entityManagerFactory")
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource)
 	{
 		LocalContainerEntityManagerFactoryBean entityManagerFactory = new LocalContainerEntityManagerFactoryBean();
@@ -43,12 +42,13 @@ public class JpaContext
 		Properties jpaProperties = new Properties();
 		jpaProperties.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
 		jpaProperties.put("hibernate.show_sql", true);
+		entityManagerFactory.setJpaProperties(jpaProperties);
 		
 		return entityManagerFactory;
 	}
 	
 	@Bean
-	public DataSource embeddedDataSource()
+	public DataSource emmbeddedDataSource()
 	{
 		return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).addScript("classpath:schema.sql").build();
 	}
