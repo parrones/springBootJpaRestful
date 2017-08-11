@@ -2,6 +2,7 @@ package com.example.demo.domain.model;
 
 public class Customer 
 {
+	private long customerId;
 	private String name;
 	private String surname;
 	private String email;
@@ -11,6 +12,7 @@ public class Customer
 	
 	public Customer(Builder builder) 
 	{
+		this.customerId = builder.customerId;
 		this.name = builder.name;
 		this.surname = builder.surname;
 		this.email = builder.email;
@@ -43,14 +45,54 @@ public class Customer
 		return address;
 	}
 
+	public long getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(long customerId) {
+		this.customerId = customerId;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setSurname(String surname) {
+		this.surname = surname;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+
+
 	public static class Builder
 	{
+		private long customerId;
 		private String name;
 		private String surname;
 		private String email;
 		private String password;
 		private String phone;
 		private String address;
+		
+		public Builder setCustomerId(long customerId) {
+			this.customerId = customerId;
+			return this;
+		}
 		
 		public Builder setName(String name) 
 		{

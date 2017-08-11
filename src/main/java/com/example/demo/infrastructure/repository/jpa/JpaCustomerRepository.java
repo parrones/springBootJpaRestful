@@ -1,6 +1,8 @@
 package com.example.demo.infrastructure.repository.jpa;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -18,31 +20,71 @@ public class JpaCustomerRepository implements CustomerRepository {
 	private SpringCrudCustomerRepository crudRepository;
 
 	@Override
-	public long save(Customer customer) {
+	public Customer save(Customer customer) {
 		com.example.demo.infrastructure.repository.jpa.Customer repoCustomer = crudRepository
 				.findByEmail(customer.getEmail());
 		if (repoCustomer == null) {
 			repoCustomer = new com.example.demo.infrastructure.repository.jpa.Customer(customer.getName(),
 					customer.getSurname(), customer.getEmail(), customer.getPassword(), customer.getPhone(),
 					customer.getAddress());
-			return crudRepository.save(repoCustomer).getId();
+			return toModelCustomer(crudRepository.save(repoCustomer));
 		}
-
-		// TODO Auto-generated method stub
-		return 0;
+		else
+		{
+			repoCustomer.setAddress(customer.getAddress());
+			repoCustomer.setName(customer.getName());
+			repoCustomer.setPhone(customer.getPhone());
+			repoCustomer.setSurname(customer.getSurname());
+			return toModelCustomer(repoCustomer);
+		}
 	}
 
 	@Override
-	public Optional<Customer> findByEmail(String email) 
-	{
+	public Optional<Customer> findByEmail(String email) {
 		com.example.demo.infrastructure.repository.jpa.Customer repoCustomer = crudRepository.findByEmail(email);
-		
+
+		if (repoCustomer == null) {
+			return Optional.empty();
+		}
+		Builder builder = new Builder().setAddress(repoCustomer.getAddress()).setEmail(repoCustomer.getEmail())
+				.setName(repoCustomer.getName()).setPassword(repoCustomer.getPassword())
+				.setPhone(repoCustomer.getPhone()).setSurname(repoCustomer.getSurname());
+		return Optional.of(new Customer(builder));
+	}
+
+	@Override
+	public List<Customer> findAllCustomers() 
+	{
+		List<com.example.demo.infrastructure.repository.jpa.Customer> repoCustomers = crudRepository.findAll();
+		return repoCustomers.stream().map(c -> toModelCustomer(c)).collect(Collectors.toList());
+	}
+
+	@Override
+	public Optional<Customer> findById(long id) 
+	{
+		com.example.demo.infrastructure.repository.jpa.Customer repoCustomer = crudRepository.findOne(id);
 		if(repoCustomer == null)
 		{
 			return Optional.empty();
 		}
-		Builder builder = new Builder().setAddress(repoCustomer.getAddress()).setEmail(repoCustomer.getEmail()).setName(repoCustomer.getName()).setPassword(repoCustomer.getPassword()).setPhone(repoCustomer.getPhone()).setSurname(repoCustomer.getSurname());
-		// TODO Auto-generated method stub
-		return Optional.of(new Customer(builder));
+		return Optional.of(toModelCustomer(repoCustomer));
+	}
+	
+	private Customer toModelCustomer(com.example.demo.infrastructure.repository.jpa.Customer repoCustomer) {
+		Builder builder = new Builder().setCustomerId(repoCustomer.getId()).setAddress(repoCustomer.getAddress()).setEmail(repoCustomer.getEmail())
+				.setName(repoCustomer.getName()).setPassword(repoCustomer.getPassword())
+				.setPhone(repoCustomer.getPhone()).setSurname(repoCustomer.getSurname());
+		return new Customer(builder);
+	}
+
+	@Override
+	public void delete(long customerId) 
+	{
+		com.example.demo.infrastructure.repository.jpa.Customer repoCustomer = crudRepository.findOne(customerId);
+		if(repoCustomer != null)
+		{
+			crudRepository.delete(repoCustomer);
+		}
+		
 	}
 }
