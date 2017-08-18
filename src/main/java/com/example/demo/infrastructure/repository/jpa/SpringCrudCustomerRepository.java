@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
-public interface SpringCrudCustomerRepository extends CrudRepository<Customer, Long>
+public interface SpringCrudCustomerRepository extends CrudRepository<Customers, Long>
 {
-	Customer findByEmail(String email);
-	List<Customer> findAll();
+	Customers findByEmail(String email);
+	List<Customers> findAll();
 }

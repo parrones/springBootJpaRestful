@@ -7,9 +7,9 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-@Entity(name="customer")
-@Table(name = "CUSTOMER")
-public class Customer 
+@Entity(name="customers")
+@Table(name = "CUSTOMERS")
+public class Customers 
 {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -23,11 +23,11 @@ public class Customer
 	private String phone;
 	private String address;
 	
-	public Customer()
+	public Customers()
 	{
 	}
 	
-	public Customer(String name, String surname, String email, String password, String phone, String address) 
+	public Customers(String name, String surname, String email, String password, String phone, String address) 
 	{
 		this.name = name;
 		this.surname = surname;

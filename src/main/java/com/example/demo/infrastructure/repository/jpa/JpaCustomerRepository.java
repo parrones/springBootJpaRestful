@@ -21,10 +21,10 @@ public class JpaCustomerRepository implements CustomerRepository {
 
 	@Override
 	public Customer save(Customer customer) {
-		com.example.demo.infrastructure.repository.jpa.Customer repoCustomer = crudRepository
+		com.example.demo.infrastructure.repository.jpa.Customers repoCustomer = crudRepository
 				.findByEmail(customer.getEmail());
 		if (repoCustomer == null) {
-			repoCustomer = new com.example.demo.infrastructure.repository.jpa.Customer(customer.getName(),
+			repoCustomer = new com.example.demo.infrastructure.repository.jpa.Customers(customer.getName(),
 					customer.getSurname(), customer.getEmail(), customer.getPassword(), customer.getPhone(),
 					customer.getAddress());
 			return toModelCustomer(crudRepository.save(repoCustomer));
@@ -41,7 +41,7 @@ public class JpaCustomerRepository implements CustomerRepository {
 
 	@Override
 	public Optional<Customer> findByEmail(String email) {
-		com.example.demo.infrastructure.repository.jpa.Customer repoCustomer = crudRepository.findByEmail(email);
+		com.example.demo.infrastructure.repository.jpa.Customers repoCustomer = crudRepository.findByEmail(email);
 
 		if (repoCustomer == null) {
 			return Optional.empty();
@@ -55,14 +55,14 @@ public class JpaCustomerRepository implements CustomerRepository {
 	@Override
 	public List<Customer> findAllCustomers() 
 	{
-		List<com.example.demo.infrastructure.repository.jpa.Customer> repoCustomers = crudRepository.findAll();
+		List<com.example.demo.infrastructure.repository.jpa.Customers> repoCustomers = crudRepository.findAll();
 		return repoCustomers.stream().map(c -> toModelCustomer(c)).collect(Collectors.toList());
 	}
 
 	@Override
 	public Optional<Customer> findById(long id) 
 	{
-		com.example.demo.infrastructure.repository.jpa.Customer repoCustomer = crudRepository.findOne(id);
+		com.example.demo.infrastructure.repository.jpa.Customers repoCustomer = crudRepository.findOne(id);
 		if(repoCustomer == null)
 		{
 			return Optional.empty();
@@ -70,7 +70,7 @@ public class JpaCustomerRepository implements CustomerRepository {
 		return Optional.of(toModelCustomer(repoCustomer));
 	}
 	
-	private Customer toModelCustomer(com.example.demo.infrastructure.repository.jpa.Customer repoCustomer) {
+	private Customer toModelCustomer(com.example.demo.infrastructure.repository.jpa.Customers repoCustomer) {
 		Builder builder = new Builder().setCustomerId(repoCustomer.getId()).setAddress(repoCustomer.getAddress()).setEmail(repoCustomer.getEmail())
 				.setName(repoCustomer.getName()).setPassword(repoCustomer.getPassword())
 				.setPhone(repoCustomer.getPhone()).setSurname(repoCustomer.getSurname());
@@ -80,7 +80,7 @@ public class JpaCustomerRepository implements CustomerRepository {
 	@Override
 	public void delete(long customerId) 
 	{
-		com.example.demo.infrastructure.repository.jpa.Customer repoCustomer = crudRepository.findOne(customerId);
+		com.example.demo.infrastructure.repository.jpa.Customers repoCustomer = crudRepository.findOne(customerId);
 		if(repoCustomer != null)
 		{
 			crudRepository.delete(repoCustomer);

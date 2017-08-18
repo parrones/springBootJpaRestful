@@ -5,8 +5,11 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
@@ -30,9 +33,28 @@ public class JpaContext
 		return transactionManager;
 	}
 	
+	@Bean(name = "entityManagerFactory")
+	@Profile({"dev", "default"})
 	@Autowired
-	@Bean("entityManagerFactory")
-	public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource)
+	public LocalContainerEntityManagerFactoryBean entityEmbeddedManagerFactory(DataSource dataSource)
+	{
+		LocalContainerEntityManagerFactoryBean entityManagerFactory = new LocalContainerEntityManagerFactoryBean();
+		entityManagerFactory.setDataSource(dataSource);
+		entityManagerFactory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+		entityManagerFactory.setPackagesToScan("com.example.demo.infrastructure.repository.jpa");
+		
+		Properties jpaProperties = new Properties();
+		jpaProperties.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+		jpaProperties.put("hibernate.show_sql", true);
+		entityManagerFactory.setJpaProperties(jpaProperties);
+		
+		return entityManagerFactory;
+	}
+	
+	@Bean(name = "entityManagerFactory")
+	@Profile({"local"})
+	@Autowired
+	public LocalContainerEntityManagerFactoryBean entityManagerFacory(DataSource dataSource)
 	{
 		LocalContainerEntityManagerFactoryBean entityManagerFactory = new LocalContainerEntityManagerFactoryBean();
 		entityManagerFactory.setDataSource(dataSource);
@@ -48,6 +70,15 @@ public class JpaContext
 	}
 	
 	@Bean
+	@Profile({"local"})
+	@ConfigurationProperties(prefix = "datasource.mysql")
+	public DataSource dataSource()
+	{
+		return DataSourceBuilder.create().build();
+	}
+	
+	@Bean
+	@Profile({"dev", "default"})
 	public DataSource emmbeddedDataSource()
 	{
 		return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).addScript("classpath:schema.sql").build();
