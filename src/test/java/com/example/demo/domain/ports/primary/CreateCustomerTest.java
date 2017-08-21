@@ -18,6 +18,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.example.demo.domain.model.CustomerResult;
 import com.example.demo.domain.model.Customer;
+import com.example.demo.domain.model.Customer.Builder;
 import com.example.demo.domain.ports.secondary.CustomerRepository;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -32,7 +33,9 @@ public class CreateCustomerTest {
 	{
 		CreateCustomerRequest request = new CreateCustomerRequest("email@prueba.com", "password");
 		CreateCustomerResponse response = new CreateCustomerResponse();
-		when(customerRepository.findByEmail("email@prueba.com")).thenReturn(Optional.empty());
+		Customer savedCustomer = new Customer(new Builder().setEmail(request.getEmail()).setPassword(request.getPassword()).setCustomerId(1l));
+		when(customerRepository.findByEmail(request.getEmail())).thenReturn(Optional.empty());
+		when(customerRepository.save(any(Customer.class))).thenReturn(savedCustomer);
 		
 		createCustomer.execute(request, response);
 		

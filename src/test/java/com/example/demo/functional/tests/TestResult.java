@@ -1,4 +1,4 @@
-package com.example.demo.integration;
+package com.example.demo.functional.tests;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.ResponseEntity;
