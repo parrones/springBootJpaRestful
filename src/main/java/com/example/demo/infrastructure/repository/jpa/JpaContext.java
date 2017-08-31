@@ -5,14 +5,11 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -22,13 +19,13 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableJpaRepositories("com.example.demo.infrastructure.repository.jpa")
 @EnableTransactionManagement
+@Import({DataSourceConfiguration.class, DataSourceConfigurationDev.class})
 public class JpaContext 
 {
 	private static final String HIBERNATE_DIALECT_H2 = "org.hibernate.dialect.H2Dialect";
 	private static final String PACKAGE_TO_SCAN = "com.example.demo.infrastructure.repository.jpa";
 	private static final String HIBERNATE_DIALECT_MY_SQL = "org.hibernate.dialect.MySQLDialect";
 
-	@Autowired
 	@Bean
 	public JpaTransactionManager transactionManager(AbstractEntityManagerFactoryBean entityManagerFactory)
 	{
@@ -38,7 +35,7 @@ public class JpaContext
 	}
 	
 	@Bean(name = "entityManagerFactory")
-	@Profile({"dev", "default"})
+	@Profile({"test"})
 	@Autowired
 	public LocalContainerEntityManagerFactoryBean entityEmbeddedManagerFactory(DataSource dataSource)
 	{	
@@ -46,7 +43,7 @@ public class JpaContext
 	}
 	
 	@Bean(name = "entityManagerFactory")
-	@Profile({"local"})
+	@Profile({"default"})
 	@Autowired
 	public LocalContainerEntityManagerFactoryBean entityManagerFacory(DataSource dataSource)
 	{	
@@ -66,20 +63,5 @@ public class JpaContext
 		entityManagerFactory.setJpaProperties(jpaProperties);
 		
 		return entityManagerFactory;
-	}
-	
-	@Bean
-	@Profile({"local"})
-	@ConfigurationProperties(prefix = "datasource.mysql")
-	public DataSource dataSource()
-	{
-		return DataSourceBuilder.create().build();
-	}
-	
-	@Bean
-	@Profile({"dev", "default"})
-	public DataSource emmbeddedDataSource()
-	{
-		return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).addScript("classpath:schema.sql").build();
 	}
 }

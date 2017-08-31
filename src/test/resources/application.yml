@@ -1,1 +1,7 @@
-server.port: 5555
+spring:
+  profiles:
+    active: test
+    
+server:
+  contextPath: /springboot
+  servletPath: /api/v1
