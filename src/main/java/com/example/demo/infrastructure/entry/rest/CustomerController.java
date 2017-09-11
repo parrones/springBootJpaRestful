@@ -22,8 +22,14 @@ import com.example.demo.domain.ports.primary.RetrieveAllCustomersUseCase;
 import com.example.demo.domain.ports.primary.RetrieveCustomerUseCase;
 import com.example.demo.domain.ports.primary.SaveCustomerProfileUseCase;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.ApiResponse;
+
 @RestController
 @RequestMapping("/customers")
+@Api(value = "customers")
 public class CustomerController {
 	
 	@Autowired
@@ -37,6 +43,10 @@ public class CustomerController {
 	@Autowired
 	private DeleteCustomerUseCase deleteCustomerUseCase;
 	
+	@ApiOperation(value = "Create a new customer")
+	@ApiResponses(value = { @ApiResponse(code = 409, message = "The customer already exists"),
+		      @ApiResponse(code = 200, message = "Created"),
+		      @ApiResponse(code = 500, message = "Internal server error")})
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<CreateCustomerResponse> createCustomer(@RequestBody CreateCustomerRequest restRequest) {
 		com.example.demo.domain.ports.primary.CreateCustomerRequest request = new com.example.demo.domain.ports.primary.CreateCustomerRequest(
